@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter.filedialog import *
 from tkinter.messagebox import *
-
+import tkinter.messagebox as msg
 
 class Application(Frame):
     def __init__(self, master=None):
@@ -11,7 +11,11 @@ class Application(Frame):
         self.create_widgets()
 
     def NewFile(self):
-        print("New File")
+        if len(self.text.get('1.0', END+"-1c"))>0:
+            if msg.askyesno('Save', 'Do you want to save'):
+                self.SaveAs()
+            else:
+                self.text.delete('1.0', END)
 
     def OpenFile(self):
         name = askopenfilename(filetypes=(("Text File", "*.txt"), ("All Files", "*.*")),
@@ -23,24 +27,57 @@ class Application(Frame):
                 UseFile.close()
 
         except:
-            showerror("Error", "Sorry, no file exists")
+            msg.showerror("Error", "Sorry, no file exists")
 
     def Save(self):
-        print("save file in folder")
+         name=asksaveasfile(mode='w',defaultextension=".txt")
+         text2save=str(self.text.get(0.0,END))
+        # name=f
+         name.write(text2save)
+
 
     def SaveAs(self):
-        print("Save the file as you want")
+        name=asksaveasfile(mode='w',defaultextension='.txt')
+        t=str(self.text.get(0.0,END))
+        try:
+            name.write(t.rstrip())
+
+        except:
+            showerror("saveError","try valid extension")
 
     def About(self):
-        msg = "This is a special text editor"
-        about = Message(root, text=msg)
+        msg.showinfo('About','this is a text-editor powered by AcadView \n developed by rakesh')
 
     def Help(self):
-        print("for help visit youtube")
+        msg.showinfo("information","for more help try google")
 
-    def callback(self):
+    def Exit(self):
         if askyesno('Verify', 'Do you really want to quit?'):
             root.destroy()
+
+    def Undo(self):
+        pass
+
+    def Redo(self):
+        pass
+
+    def Cut(self):
+        self.clipboard_clear()
+        text = self.text.get("sel.first", "sel.last")
+        self.clipboard_append(text)
+
+    def Copy(self):
+        pass
+
+    def Paste(self):
+        pass
+
+    def Find(self):
+        pass
+
+    def Delete(self):
+        pass
+
 
     def create_widgets(self):
         scrollbar = Scrollbar(root)
@@ -61,19 +98,19 @@ class Application(Frame):
         filemenu.add_command(label="Save", command=self.Save)
         filemenu.add_command(label="Save as", command=SaveAs)
         filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=self.callback)
+        filemenu.add_command(label="Exit", command=self.Exit)
 
         editmenu = Menu(menu)
         menu.add_cascade(label="Edit", menu=editmenu)
-        editmenu.add_command(label="Undo")
-        editmenu.add_command(label="Redo")
+        editmenu.add_command(label="Undo", command=self.Undo)
+        editmenu.add_command(label="Redo", command=self.Redo)
         editmenu.add_separator()
-        editmenu.add_command(label="cut")
-        editmenu.add_command(label="copy")
-        editmenu.add_command(label="paste")
-        editmenu.add_command(label="delete")
+        editmenu.add_command(label="cut", command=self.Cut)
+        editmenu.add_command(label="copy", command=self.Copy)
+        editmenu.add_command(label="paste", command=self.Paste)
+        editmenu.add_command(label="delete", command=self.Delete)
         editmenu.add_separator()
-        editmenu.add_command(label="find")
+        editmenu.add_command(label="find", command=self.Find)
 
         menu.add_cascade(label="Help", command=self.Help)
         menu.add_cascade(label="About", command=self.About)
