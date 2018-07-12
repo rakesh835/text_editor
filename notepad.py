@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter.filedialog import *
 from tkinter.messagebox import *
 import tkinter.messagebox as msg
+import tkinter.filedialog as fld
 
 
 class Application(Frame):
@@ -12,17 +13,15 @@ class Application(Frame):
         self.create_widgets()
         self.changes = [""]
         self.steps = int()
+        self.file_name = None
 
-    def NewFile(self):
+    def NewFile(self, event=None):
         if len(self.text.get('1.0', END + "-1c")) > 0:
             if msg.askyesno('Save', 'Do you want to save'):
                 self.SaveAs()
+
             else:
                 self.text.delete('1.0', END)
-        """app = Application()
-        app.title('Python Text Editor')
-        app.option_add('*tearOff', False)
-        app.mainloop()"""
 
     def OpenFile(self):
         name = askopenfilename(filetypes=(("Text File", "*.txt"), ("All Files", "*.*")),
@@ -39,7 +38,6 @@ class Application(Frame):
     def Save(self):
         name = asksaveasfile(mode='w', defaultextension=".txt")
         text2save = str(self.text.get(0.0, END))
-        # name=f
         name.write(text2save)
 
     def SaveAs(self):
@@ -62,65 +60,29 @@ class Application(Frame):
             root.destroy()
 
     def Undo(self, event=None):
-        """if self.steps != 0:
-           self.steps -= 1
-           self.delete(0, END)
-           self.insert(END, self.changes[self.steps])"""
+        self.text.event_generate("<<Undo>>")
+        return "break"
 
-        try:
-            self.text.edit_undo()
-        except TclError:
-            pass
-
-    def Redo(self):
-        try:
-            self.text.edit_redo()
-        except TclError:
-            pass
+    def Redo(self, event=None):
+        self.text.event_generate("<<Redo>>")
+        return "break"
 
     def Cut(self, evt=None):
-        widget = self.focus_get()
-        if isinstance(widget, Entry):
-            if widget.selection_present():
-                widget.clipboard_clear()
-                widget.clipboard_append(widget.selection_get())
-                widget.delete(SEL_FIRST, SEL_LAST)
-        else:
-            widget.tk.call('tk_textCut', widget._w)
+        self.text.event_generate("<<Cut>>")
+        return "break"
 
     def Copy(self):
-        """widget = self.focus_get()
-        if isinstance(widget, Entry):
-            if widget.selection_present():
-                widget.clipboard_clear()
-                widget.clipboard_append(widget.selection_get())
-        else:
-            widget.tk.call('tk_textCopy', widget._w)"""
-        self.clipboard_clear()
-        self.clipboard_append(self.text.selection_get())
+        self.text.event_generate("<<Copy>>")
 
     def Paste(self):
-        """widget = self.focus_get()
-        # works for Text and Entry, at least; fails quietly
-        widget.tk.call('tk_textPaste', widget._w)"""
-        insertion = self.selection_get(selection="CLIPBOARD")
-        self.text.insert(0.0, insertion)
+        self.text.event_generate("<<Paste>>")
 
-    def Select_All(self, evt=None):
-        widget = self.focus_get()
-        if isinstance(widget, Text):
-            # the following commented-out code fails on MacPython
-            # because the tk commands themselves aren't recognized;
-            # hence I am not sure if the code is correct
-            print("Cannot yet 'Select All' in Text widgets")
-        #       widget.tk_textResetAnchor("1.0")
-        #       widget.tk_textSelectTo(END)
-        elif isinstance(widget, Entry):
-            widget.selection_range(0, END)
-            widget.icursor(0)
+    def Select_All(self, event=None):
+        self.text.tag_add('sel', '1.0', 'end')
+        return "break"
 
     def Find(self):
-        pass
+        findString = fld.askstring("Find...", "Enter Text")
 
     def Delete(self):
         pass
@@ -137,9 +99,20 @@ class Application(Frame):
         menu = Menu(root)
         root.config(menu=menu)
 
-        filemenu = Menu(menu)
+        new_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur\Desktop/icons/new_file.gif')
+        open_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/open_file.gif')
+        save_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/save.gif')
+        cut_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/cut.gif')
+        copy_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/copy.gif')
+        paste_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/paste.gif')
+        undo_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/undo.gif')
+        redo_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/redo.gif')
+        about_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/about.gif')
+        find_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/find_text.gif')
+
+        filemenu = Menu(menu, tearoff=0)
         menu.add_cascade(label="File", menu=filemenu)
-        filemenu.add_command(label="New", command=self.NewFile)
+        filemenu.add_command(label="New", compound='left', image=new_file_icon, command=self.NewFile, underline=0)
         filemenu.add_command(label="Open", command=self.OpenFile)
         filemenu.add_command(label="Save", command=self.Save)
         filemenu.add_command(label="Save as", command=SaveAs)
