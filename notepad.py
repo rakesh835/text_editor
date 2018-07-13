@@ -1,3 +1,6 @@
+""" This is a simple text editor created by  Rakesh Kumar as a project assignment during training in AcadView."""
+
+#---import required modules---
 import tkinter as tk
 from tkinter import *
 from tkinter.filedialog import *
@@ -5,7 +8,7 @@ from tkinter.messagebox import *
 import tkinter.messagebox as msg
 import tkinter.filedialog as fld
 
-
+#---main class Application---
 class Application(Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -15,6 +18,7 @@ class Application(Frame):
         self.steps = int()
         self.file_name = None
 
+# ---functions for File menu i.e. new, open, save, save as, exit
     def NewFile(self, event=None):
         if len(self.text.get('1.0', END + "-1c")) > 0:
             if msg.askyesno('Save', 'Do you want to save'):
@@ -49,15 +53,19 @@ class Application(Frame):
         except:
             showerror("saveError", "try valid extension")
 
-    def About(self):
-        msg.showinfo('About', 'this is a text-editor powered by AcadView \n developed by rakesh')
-
-    def Help(self):
-        msg.showinfo("information", "for more help try google")
-
     def Exit(self):
         if askyesno('Verify', 'Do you really want to quit?'):
             root.destroy()
+
+# function for about menu
+    def About(self):
+        msg.showinfo('About', 'this is a text-editor powered by AcadView \n developed by rakesh')
+
+# function for help menu
+    def Help(self):
+        msg.showinfo("information", "for more help try google")
+
+# functions for Edit menus i.e. undo, redo, cut, copy, paste, find, delete, select all
 
     def Undo(self, event=None):
         self.text.event_generate("<<Undo>>")
@@ -87,6 +95,8 @@ class Application(Frame):
     def Delete(self):
         pass
 
+#---function for creating text area, scroll bar---
+
     def create_widgets(self):
         scrollbar = Scrollbar(root)
         self.text = Text(root, height=20, width=50)
@@ -96,8 +106,7 @@ class Application(Frame):
         self.text.config(yscrollcommand=scrollbar.set)
         self.text.configure(cursor='xterm')
 
-        menu = Menu(root)
-        root.config(menu=menu)
+        # --- it holds the images for shortcut icons
 
         new_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur\Desktop/icons/new_file.gif')
         open_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/open_file.gif')
@@ -110,6 +119,9 @@ class Application(Frame):
         about_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/about.gif')
         find_file_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/find_text.gif')
 
+        #--- it creates the menus on menubar
+        menu = Menu(root)
+        root.config(menu=menu)
         filemenu = Menu(menu, tearoff=0)
         menu.add_cascade(label="File", menu=filemenu)
         filemenu.add_command(label="New", compound='left', image=new_file_icon, command=self.NewFile, underline=0)
@@ -135,7 +147,19 @@ class Application(Frame):
         menu.add_cascade(label="Help", command=self.Help)
         menu.add_cascade(label="About", command=self.About)
 
+        shortcut_bar = Frame(root, height=25)
+        shortcut_bar.pack(expand='no', fill='x')
 
+        # code for displaying icons
+        icons = ('about', 'open_file', 'save', 'cut', 'copy', 'paste', 'undo', 'redo', 'find_text', 'about')
+        for i, icon in enumerate(icons):
+            tool_bar_icon = PhotoImage(file='C:/Users/Som Prakash Thakur/Desktop/icons/{}.gif'.format(icon))
+            cmd = eval(icon)
+            tool_bar = Button(shortcut_bar, image=tool_bar_icon, command=cmd)
+            tool_bar.image = tool_bar_icon
+            tool_bar.pack(side='left')
+
+#--- main root window and object for main class---
 root = Tk(className="Text editor")
 app = Application(root)
 app.mainloop()
