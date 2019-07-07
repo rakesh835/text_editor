@@ -1,4 +1,4 @@
-""" This is a simple text editor created by  Rakesh Kumar as a project assignment during training in AcadView."""
+""" This is a simple text editor created by  Rakesh Kumar as a project assignment during training."""
 
 #---import required modules---
 import tkinter as tk
