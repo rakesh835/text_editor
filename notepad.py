@@ -92,9 +92,6 @@ class Application(Frame):
     def Find(self):
         findString = fld.askstring("Find...", "Enter Text")
 
-    def Delete(self):
-        pass
-
 #---function for creating text area, scroll bar---
 
     def create_widgets(self):
